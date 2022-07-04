@@ -1,0 +1,261 @@
+html, button {
+    font-size: 16px;
+    height: 100%;
+}
+button {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    z-index: 1;
+}
+
+button:hover {
+	cursor: pointer;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.backToIndexBtn {
+	margin: 5%;
+	width: 100px;
+    height: 50px;
+	position: fixed;
+	display: table-cell;
+    vertical-align:middle;
+    text-align:center;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: solid 1px;
+    padding: 10px 20px;
+}
+
+.backToIndexBtn:active {
+	margin: 5%;
+	position: fixed;
+	display: table-cell;
+    vertical-align:middle;
+    text-align:center;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: solid 1px;
+    padding: 10px 20px;
+    background:yellow;
+    opacity:0.3;
+}
+
+.startTestBtn {
+	margin: 5%;
+	display: table-cell;
+    vertical-align:middle;
+    text-align:center;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: solid 1px;
+    padding: 10px 20px;
+}
+
+.startTestBtn:active {
+	margin: 5%;
+	display: table-cell;
+    vertical-align:middle;
+    text-align:center;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: solid 1px;
+    padding: 10px 20px;
+    background:yellow;
+    opacity:0.3;
+}
+
+.goToResultBtn {
+	margin: 5%;
+	width: 200px;
+    height: 50px;
+	display: inline-block;
+    vertical-align:middle;
+    text-align:center;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: solid 1px;
+    padding: 10 px 10 px 10 px 10 px;
+}
+
+.main-wrap {
+	display: inline-block;
+    align-items: center;
+    vertical-align: middle;
+    padding-top:20%;
+}
+
+.title-wrap {
+    display: table;
+    position: relative;
+    width:100vw;
+    height:80px;
+}
+
+.title {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    margin-bottom: 50px;
+}
+
+.question-wrap {
+    display: table;
+    position: relative;
+    width:100vw;
+    height:100px;
+}
+
+.question {
+    display:table-cell;
+    vertical-align: middle;
+    padding-left: 20px;
+    text-align: center;
+}
+
+.answer-wrap {
+    position: relative;
+    width:100vw;
+    height:100%;
+}
+
+.answer {
+    padding: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.bottom {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.controller-wrap {
+    display: table;
+    position: relative;
+    width:100vw;
+    height:70px;
+}
+
+.prev-btn {
+    width:50%;
+    height: 100%;
+    display: table-cell;
+    vertical-align:middle;
+    text-align:center;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.next-btn {
+    width:50%;
+    height: 100%;
+    display: table-cell;
+    vertical-align:middle;
+    text-align:center;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#main::after, #main1::after, #main2::after, #main3::after, #main4::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height:100%;
+    background:red;
+    opacity: 0.1;
+    z-index: -1;
+}
+
+.prev-btn::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 50%;
+    height:100%;
+    background:yellow;
+    opacity: 0.1;
+    z-index: -1;
+}
+
+.next-btn::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 50%;
+    height:100%;
+    background:blue;
+    opacity: 0.1;
+    z-index: -1;
+}
+
+/* intro */
+.intro-wrap {
+    display: table;
+    position: relative;
+    width:100vw;
+    height:100vh;
+}
+.intro-wrap::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height:100%;
+    background:orange;
+    opacity: 0.2;
+    z-index: -1;
+}
+.intro {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+.intro-story {
+    font-size: 1.5em;
+    font-weight: bold;
+    white-space: pre;
+}
+
+/* result */
+.result-wrap {
+    display: table;
+    position: relative;
+    width:100vw;
+    height:100vh;
+}
+.result-wrap::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height:100%;
+    background:blue;
+    opacity: 0.1;
+    z-index: -1;
+}
+.result {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    white-space: pre;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sam.coffeeshop.mappers.MemberMapper">
+
+<!-- 회원가입 -->
+<insert id="join">
+	insert into member(member_id,password,member_name,member_phone,email,
+	member_addr1,member_addr2,member_addr3,role,regdate)
+	values(#{member_id},#{password},#{member_name},#{member_phone},#{email},
+			#{member_addr1},#{member_addr2},#{member_addr3},#{role},now())
+</insert>
+
+<!-- 아이디중복체크 -->
+<select id="idCheck" resultType="int">
+	select count(*) from member where member_id=#{member_id}
+</select>
+
+<!-- 이메일중복체크 -->
+<select id="emailCheck" resultType="int">
+	select count(*) from member where email=#{email}
+</select>
+
+<!-- 비밀번호 체크 -->
+<select id="pwCheck" >
+	select password from member where member_id=#{member_id}
+</select>
+
+<!-- 로그인처리 -->
+<!-- <select id="loginCheck" resultType="com.sam.coffeeshop.domain.Member"> -->
+<!-- 	select member_id,password from member where member_id=#{member_id} and password={#password} -->
+<!-- </select> -->
+
+<!--update  -->
+	<update id = "update" >
+	update member set 
+			password=#{password},
+			member_phone=#{member_phone},
+			member_addr1=#{member_addr1},
+			member_addr2=#{member_addr2},
+			member_addr3=#{member_addr3},
+			member_name=#{member_name}
+	where member_id=#{member_id}
+	</update>
+	
+<!-- delete -->
+	<delete id= "delete" >
+		delete from member
+		where member_id=#{member_id}
+	</delete>
+<!-- 로그인처리 -->
+	<select id="getMemberById" parameterType="String" resultType="com.sam.coffeeshop.domain.Member">
+		select * from member where member_id=#{member_id}
+	</select>
+</mapper>

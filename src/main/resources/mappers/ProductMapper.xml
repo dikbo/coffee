@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sam.coffeeshop.mappers.ProductMapper">
+
+<!-- product-search -->
+<sql id="search">
+ 	<where>
+ 		<if test="word!=null and field=='product_origin'">
+ 		product_origin like CONCAT('%',#{word},'%')
+ 		</if>
+ 		<if test="word!=null and field=='product_name'">
+ 		product_name like CONCAT('%',#{word},'%')
+ 		</if>
+ 	</where>
+</sql>
+
+<!-- table mapping -->
+<resultMap type="com.sam.coffeeshop.domain.Category" id="categoryMap">
+<id property="category_name" column="category_name"/>
+<id property="category_code" column="category_code"/>
+<id property="categorycode_ref" column="categorycode_Ref"/>
+</resultMap>
+
+<resultMap type="com.sam.coffeeshop.domain.Cart" id="cartMap">
+<id property="product_id" column="product_id"/>
+<id property="cart_id" column="cart_id"/>
+<id property="member_id" column="member_id"/>
+<id property="qty" column="qty"/>
+<id property="regdate" column="regdate"/>
+</resultMap>
+
+<resultMap type="com.sam.coffeeshop.domain.Product" id="productMap">
+<id property="product_id" column="product_id"/>
+<id property="product_name" column="product_name"/>
+<id property="product_price" column="product_price"/>
+<id property="product_des" column="product_des"/>
+<id property="product_img" column="product_img"/>
+<id property="product_taste" column="product_taste"/>
+<id property="categorycode_ref" column="categorycode_ref"/>
+<id property="product_origin" column="product_origin"/>
+<id property="category_code" column="category_code"/>
+</resultMap>
+
+<resultMap type="com.sam.coffeeshop.domain.CartList" id="cartListMap">
+	<collection property="cart" resultMap="cartMap"/>
+	<collection property="product" resultMap="productMap"/>
+</resultMap>
+
+<resultMap type="com.sam.coffeeshop.domain.Order" id="orderMap">
+<id property="order_id" column="order_id"/>
+<id property="member_id" column="member_id"/>
+<id property="status" column="status"/>
+<id property="order_name" column="order_name"/>
+<id property="order_addr1" column="order_addr1"/>
+<id property="order_addr2" column="order_addr2"/>
+<id property="order_addr3" column="order_addr3"/>
+<id property="order_phone" column="order_phone"/>
+<id property="total_amount" column="total_amount"/>
+<id property="payment" column="payment"/>
+<id property="order_date" column="order_date"/>
+<id property="order_title" column="order_title"/>
+<id property="tracking" column="tracking"/>
+</resultMap>
+
+<resultMap type="com.sam.coffeeshop.domain.OrderDetail" id="orderDetailMap">
+<id property="detail_id" column="detail_id"/>
+<id property="order_id" column="order_id"/>
+<id property="product_id" column="product_id"/>
+<id property="detail_qty" column="detail_qty"/>
+</resultMap>
+
+<resultMap type="com.sam.coffeeshop.domain.orderProduct" id="orderProductMap">
+	<collection property="orderDetail" resultMap="orderDetailMap"/>
+	<collection property="product" resultMap="productMap"/>
+</resultMap>
+
+
+
+
+
+<!-- 상품 리스트-페이징 -->
+<select id="productAllList" resultMap="productMap">
+select * from product 
+<include refid="search"/>
+order by product_id desc
+limit #{startRow}, #{pageSize}
+</select>
+
+<select id="productList" resultMap="productMap">
+select * from product 
+where category_code = #{category_code}
+order by product_id desc
+limit #{startRow}, #{pageSize}
+</select>
+
+
+<!-- 상품 관련 -->
+<select id="productView" resultMap="productMap">
+select * from product 
+where product_id = #{product_id}
+</select>
+
+<select id="getCategoryCount" resultType="int">
+select count(*) from product where category_code =#{category_code}
+</select>
+
+<select id="getProductAllCount" resultType="int">
+select count(*) from product
+</select>
+
+<select id="productCateCount" resultType="int">
+	select count(*) from product where category_code=#{category_code}
+</select>
+
+
+<!-- 리뷰 관련 -->
+<insert id="reviewRegister">
+insert into review_board (content,rating,member_id,product_id, order_id)
+	values (#{content},#{rating},#{member_id},#{product_id},#{order_id})
+</insert>
+
+<select id="reviewList" resultType="com.sam.coffeeshop.domain.Review_Board">
+select review_id,content,rating,member_id,product_id
+from review_board
+where product_id = #{product_id}
+order by review_id desc
+limit #{pageStart}, #{pageSize}
+</select>
+
+<select id="getReviewList" resultType="com.sam.coffeeshop.domain.Review_Board">
+	select * from review_board where product_id = #{product_id}
+</select>
+
+<select id="reviewCheck" resultType="int">
+select count(*) from review_board where member_id=#{member_id} and product_id=#{product_id} and order_id = #{order_id}
+</select>
+
+<select id="getReviewStar" resultType="int">
+select rating from review_board where product_id = #{product_id}
+</select>
+
+<select id="getReviewCount" resultType="int">
+select count(*) from review_board where product_id = #{product_id}
+</select>
+
+
+<!-- 장바구니 관련 -->
+<insert id="addCart">
+insert into cart (member_id, product_id, qty, regdate)
+	values(#{member_id},#{product_id},#{qty},now())
+</insert>
+
+<select id="cartList" resultMap="cartListMap">
+select 
+cart.product_id,cart_id,member_id,qty,regdate,product_name,product_price,product_des,
+product_img,product_taste,product_origin,category_code
+from cart
+left outer join product on
+cart.product_id=product.product_id
+where cart.member_id = #{member_id}
+</select>
+
+<delete id="cartDelete">
+delete from cart where cart_id=#{cart_id} and member_id=#{member_id}
+</delete>
+
+<delete id="cartAllDelete">
+delete from cart where member_id = #{member_id}
+</delete>
+
+<select id="findByCartId" resultMap="cartListMap">
+select 
+cart.product_id,cart_id,member_id,qty,product_name,product_price
+from cart
+left outer join product on
+cart.product_id=product.product_id
+where cart.cart_id = #{cart_id}
+</select>
+
+<select id="cartSize" resultType="int">
+select count(*) from cart where member_id = #{member_id}
+</select>
+
+<select id="cartCheck" resultType="int">
+select count(*) from cart where member_id=#{member_id} and product_id=#{product_id}
+</select>
+
+<select id="getCart" resultMap="cartMap">
+select * from cart where cart_id = #{cart_id}
+</select>
+
+<delete id="cartDeleteByCartId">
+delete from cart where cart_id = #{cart_id}
+</delete>
+
+<update id="cartProductQtyUpdate">
+	update cart set qty=#{qty} where product_id=#{product_id}
+</update>
+
+<select id="getCartforQty" parameterType="java.util.HashMap" resultType="com.sam.coffeeshop.domain.Cart">
+	select * from cart where product_id=#{product_id} and cart_id=#{cart_id}
+</select>
+
+
+<!-- 주문목록 관련 -->
+<insert id="addOrder">
+insert into `order` (order_id,member_id,order_name,order_addr1,order_addr2,order_addr3,order_phone,total_amount,payment,order_date,order_title)
+	values(#{order_id},#{member_id},#{order_name},#{order_addr1},#{order_addr2},#{order_addr3},#{order_phone},#{total_amount},#{payment},now(),#{order_title})
+</insert>
+
+<insert id="addOrderDetails">
+insert into `orderdetail` (order_id, product_id, detail_qty)
+values (#{order_id},#{product_id},#{detail_qty})
+</insert>
+
+<select id="orderList" resultMap="orderMap">
+select * from `order` where member_id = #{member_id} order by order_date desc;
+</select>
+
+<select id="orderView" resultMap="orderMap">
+select * from `order` where order_id = #{order_id}
+</select>
+
+<select id="orderProduct" resultMap="orderProductMap">
+select
+order_detail.product_id,qty,product_name,product_price,product_img
+from order_detail
+left outer join product on
+order_detail.product_id=product.product_id
+where order_detail.order_id = #{order_id}
+</select>
+
+<!-- 주문삭제(orderDetail) -->
+<delete id="orderDetailsDelete">
+delete from orderdetail where order_id=#{order_id};
+</delete>
+
+<!-- 주문삭제(order) -->
+<delete id="orderDelete">
+delete from `order` where order_id=#{order_id};
+</delete>
+
+<select id="getmyOrderdetail">
+SELECT * FROM coffeeshop.orderdetail as od LEFT OUTER JOIN coffeeshop.product as pd
+ on od.product_id = pd.product_id;
+</select>
+
+<select id="getOrderDetails" resultMap="orderDetailMap">
+select * from orderdetail where order_id = #{order_id}
+</select>
+
+</mapper>

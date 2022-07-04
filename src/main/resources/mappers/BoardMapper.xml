@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sam.coffeeshop.mappers.BoardMapper">
+	<!-- qna search -->
+	<sql id="qsearch">
+	<where>
+		<if test="word != null and field == 'subject'">
+			subject like CONCAT('%', #{word}, '%')
+		</if>
+		<if test="word != null and field == 'member_id'">
+			member_id like CONCAT('%', #{word}, '%')
+		</if>
+	</where>
+	</sql>
+	
+    <!-- qna 목록 조회 -->
+    <select id="getQnaBoardList" parameterType="com.sam.coffeeshop.domain.Qnaboard" resultType="com.sam.coffeeshop.domain.Qnaboard">	
+    	select * from qnaboard order by board_re_ref desc, board_re_seq asc 
+    </select>
+    
+    <!--  qna 상세 페이지 -->
+    <select id="getQnaBoardDetail" parameterType="com.sam.coffeeshop.domain.Qnaboard" resultType="com.sam.coffeeshop.domain.Qnaboard">        
+        select * from qnaboard where board_id=#{board_id}         
+    </select>
+    
+    <!-- qna 작성 -->
+    <insert id="insertQnaBoard" parameterType="com.sam.coffeeshop.domain.Qnaboard">         
+        <selectKey resultType="Long" keyProperty="board_re_ref" order="BEFORE">
+            select ifnull(max(board_re_ref), board_id) + 1 from qnaboard
+        </selectKey>
+        
+        insert into qnaboard (board_re_ref, board_re_lev, board_re_seq, member_id, subject, content)
+        values(#{board_re_ref}, 0, 0, #{member_id}, #{subject}, #{content})
+    </insert>
+    
+    <!-- qna 삭제 -->
+    <delete id="deleteQnaBoard" parameterType="com.sam.coffeeshop.domain.Qnaboard">
+    	delete from qnaboard where board_id=#{board_id}
+  	</delete>
+    
+    <!-- qna 수정 -->
+    <update id="updateQnaBoard">
+    	update qnaboard set subject=#{subject}, content=#{content} where board_id=#{board_id}
+    </update>
+    
+    <!-- qna 답글 순서 수정 -->
+    <update id="updateQnaBoardReSeq" parameterType="com.sam.coffeeshop.domain.Qnaboard">
+    	update qnaboard set board_re_seq = board_re_seq + 1 where board_re_ref = #{board_re_ref} and board_re_seq > #{board_re_seq}
+    </update>
+ 	
+ 	<!-- qna 답글 작성 -->
+    <insert id="insertQnaBoardReply" parameterType="com.sam.coffeeshop.domain.Qnaboard">
+    	insert into qnaboard (board_re_ref, board_re_lev, board_re_seq, member_id, subject, content)
+        values(#{board_re_ref}, #{board_re_lev} + 1, #{board_re_seq} + 1, #{member_id}, #{subject}, #{content})
+    </insert>
+	
+	<!-- paging-qna -->
+	<select id="qfindPage" resultType="com.sam.coffeeshop.domain.Qnaboard">
+		select * from qnaboard order by board_id desc limit #{pageStart}, #{pageSize}
+	</select>
+	
+	<select id="qfindAll" resultType="com.sam.coffeeshop.domain.Qnaboard">
+		select * from qnaboard 
+		<include refid="qsearch" />
+		order by board_re_ref desc, board_re_seq asc limit #{pageStart}, #{pageSize}
+	</select>
+	
+	<!-- qna 게시글 수 -->
+    <select id="getQnaBoardCnt" resultType="int">
+    	select count(*) from qnaboard
+    	<include refid="qsearch" />
+    </select>
+    
+    <!-- qna 내글 조회 -->
+    <select id="getmyQnaBoardList" parameterType="com.sam.coffeeshop.domain.Qnaboard" resultType="com.sam.coffeeshop.domain.Qnaboard">
+	select * from qnaboard where member_id=#{member_id} order by board_re_ref desc, board_re_seq asc 
+    </select>
+</mapper>

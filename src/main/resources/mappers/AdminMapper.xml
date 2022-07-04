@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.sam.coffeeshop.mappers.AdminMapper">
+	
+	<!-- product search -->
+	<sql id="psearch">
+	<where>
+		<if test="word != null and field == 'product_name'">
+			product_name like CONCAT('%', #{word}, '%')
+		</if>
+	</where>
+	</sql>
+	
+	<!-- member search -->
+	<sql id="msearch">
+	<where>
+		<if test="word != null and field == 'member_name'">
+			member_name like CONCAT('%', #{word}, '%')
+		</if>
+	</where>
+	</sql>
+	
+	<!-- order search -->
+	<sql id="osearch">
+	<where>
+		<if test="word != null and field == 'member_id'">
+			member_id like CONCAT('%', #{word}, '%')
+		</if>
+	</where>
+	</sql>
+	
+
+	<!-- member -->
+	<select id="getMemberList" resultType="com.sam.coffeeshop.domain.Member">
+		select * from member
+	</select>
+	
+	<select id="getMember" resultType="com.sam.coffeeshop.domain.Member">
+		select * from member where id=#{id}
+	</select>
+	
+	<delete id="mDelete" parameterType="com.sam.coffeeshop.domain.Member">
+		delete from member where id=#{id}
+	</delete>
+	
+	<!-- test -->
+	<select id="testResult" parameterType="com.sam.coffeeshop.domain.TestVO" resultType="com.sam.coffeeshop.domain.Product">
+		select * from product
+		where product_taste=#{product_taste}
+		and category_code=#{category_code}
+		and product_origin=#{product_origin}
+		order by product_id desc limit 3
+	</select>
+	
+	<select id="testcount" resultType="int">
+		select count(*) from product 
+		where product_taste=#{product_taste}
+		and category_code=#{category_code}
+		and product_origin=#{product_origin}
+	</select>
+	
+	<!-- product -->
+	<select id="getAdminProductList" resultType="com.sam.coffeeshop.domain.Product">
+		select * from product
+	</select>
+	
+	<insert id="pRegist">
+		insert into product(product_des, product_img, product_name, product_price, product_taste, category_code, categorycode_ref, product_origin)
+		values(#{product_des}, #{product_img}, #{product_name}, #{product_price}, #{product_taste}, #{category_code}, #{categorycode_ref}, #{product_origin})
+	</insert>
+	
+	<select id="category" resultType="com.sam.coffeeshop.domain.Category">
+		select * from category
+	</select>
+	
+	<select id="categoryName" resultType="com.sam.coffeeshop.domain.Category">
+		select * from category where category_code=#{category_code}
+	</select>
+	
+	<select id="getProduct" resultType="com.sam.coffeeshop.domain.Product">
+		select * from product where product_id=#{product_id}
+	</select>
+	
+	<delete id="pDelete" parameterType="com.sam.coffeeshop.domain.Product">
+		delete from product where product_id=#{product_id}
+	</delete>
+	
+	<update id="pUpdate">
+		update product 
+		set product_des=#{product_des}, product_img=#{product_img}, product_name=#{product_name}, 
+		product_price=#{product_price}, product_taste=#{product_taste}, category_code=#{category_code}, 
+		categorycode_ref=#{categorycode_ref}, product_origin=#{product_origin}
+		where product_id=#{product_id}
+	</update>
+	
+	
+	<!-- paging-product -->
+	<select id="findPage" resultType="com.sam.coffeeshop.domain.Product">
+		select * from product order by product_id desc limit #{pageStart}, #{pageSize}
+	</select>
+	
+	<select id="findAll" resultType="com.sam.coffeeshop.domain.Product">
+		select * from product 
+		<include refid="psearch" />
+		order by product_id desc limit #{pageStart}, #{pageSize}
+	</select>
+	
+	<select id="productCount" resultType="int">
+		select count(*) from product
+		<include refid="psearch" />
+	</select>
+	
+	
+	<!-- paging-member -->
+	<select id="mfindPage" resultType="com.sam.coffeeshop.domain.Member">
+		select * from member order by member_id desc limit #{pageStart}, #{pageSize}
+	</select>
+	
+	<select id="mfindAll" resultType="com.sam.coffeeshop.domain.Member">
+		select * from member 
+		<include refid="msearch" />
+		order by member_id desc limit #{pageStart}, #{pageSize}
+	</select>
+	
+	<select id="memberCount" resultType="int">
+		select count(*) from member
+		<include refid="msearch" />
+	</select>
+	
+	
+	<!-- order list -->
+	<select id="orderListAll" resultType="com.sam.coffeeshop.domain.Order">
+		select * from `order`
+	</select>
+	
+	<update id="orderStatusUpdate">
+		update `order`
+		set status=#{status}
+		where order_id=#{order_id}
+	</update>
+	
+	<update id="orderTrackingUpdate">
+		update `order`
+		set tracking=#{tracking}
+		where order_id=#{order_id}
+	</update>
+	
+	<!-- paging-order -->
+	<select id="ofindPage" resultType="com.sam.coffeeshop.domain.Order">
+		select * from `order` order by order_date desc limit #{pageStart}, #{pageSize}
+	</select>
+	
+	<select id="ofindAll" resultType="com.sam.coffeeshop.domain.Order">
+		select * from `order` 
+		<include refid="osearch" />
+		order by order_date desc limit #{pageStart}, #{pageSize}
+	</select>
+	
+	<select id="orderCount" resultType="int">
+		select count(*) from `order`
+		<include refid="osearch" />
+	</select>
+	
+</mapper>
